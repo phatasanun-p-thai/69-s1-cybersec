@@ -1,12 +1,3 @@
 data/
-<<<<<<< HEAD
-<<<<<<< HEAD
 .env
-=======
->>>>>>> 55f16f3d475286ba15a38c6549b9eed8a6f716f8
-
-
-=======
 data-postgres/
-.env
->>>>>>> 37a8a7a8483d8afa0f8e55d254bf9e6b349e9933

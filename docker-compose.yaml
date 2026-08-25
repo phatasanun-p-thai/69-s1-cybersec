@@ -1,5 +1,6 @@
 services:
 <<<<<<< HEAD
+<<<<<<< HEAD
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: 69-s1-admin
@@ -21,17 +22,34 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
+=======
+  db:
+    image: postgres:16-alpine
+    container_name: 69-s1-db
+    ports:
+      - 54327:5432
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+>>>>>>> 55f16f3d475286ba15a38c6549b9eed8a6f716f8
       - ./data-postgres:/var/lib/postgresql/data
 
   admin:
     image: dpage/pgadmin4
     container_name: 69-s1-admin
     ports:
+<<<<<<< HEAD
       - "${PGADMIN_PORT}:80"
+=======
+      - 8081:80
+>>>>>>> 55f16f3d475286ba15a38c6549b9eed8a6f716f8
     environment:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
 
+<<<<<<< HEAD
   app:
     image: prawee/strapi
     container_name: 69-s1-app
@@ -50,3 +68,7 @@ services:
 volumes:
   data-postgres:
 >>>>>>> 37a8a7a8483d8afa0f8e55d254bf9e6b349e9933
+=======
+volumes:
+  data-postgres:
+>>>>>>> 55f16f3d475286ba15a38c6549b9eed8a6f716f8

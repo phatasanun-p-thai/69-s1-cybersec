@@ -1,23 +1,15 @@
 ### 1. Register / Signup 
-POST http://localhost:9091/api/auth/local/register
+GET  http://localhost:9091/admin/register-admin
 Content-Type: application/json
 
 {
-  "username": " ",
-  "email": " ",
-  "password": " "
+  "email": "",
+  "password": " ",
+  "firstname": " ",
+  "lastname": " "
 }
 
 ### 2. Login User 
-POST http://localhost:9091/api/auth/local
-Content-Type: application/json
-
-{
-  "identifier": " ",
-  "password": " "
-}
-
-### 3. Login Admin 
 POST http://localhost:9091/admin/login
 Content-Type: application/json
 
@@ -27,14 +19,14 @@ Content-Type: application/json
   "rememberMe": false
 }
 
-### 4. Forgot Password 
-POST http://localhost:9091/api/auth/forgot-password
+### 3. Forgot Password 
+POST http://localhost:9091/admin/forgot-password
 Content-Type: application/json
 
 {
   "email": " "
 }
 
-### 5. Profile
-GET http://localhost:9091/api/users/me
-Authorization: Bearer You Token
+### 4. Profile
+GET http://localhost:9091/admin/users/me
+Authorization: Bearer 

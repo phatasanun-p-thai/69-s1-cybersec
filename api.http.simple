@@ -1,5 +1,9 @@
-### 1. Register / Signup 
-GET  http://localhost:9091/admin/register-admin
+### ============================================================
+###  ADMIN  endpoints  (Strapi admin panel)
+### ============================================================
+
+### 1. Admin - Register / Signup
+GET http://localhost:9091/admin/register-admin
 Content-Type: application/json
 
 {
@@ -9,24 +13,59 @@ Content-Type: application/json
   "lastname": " "
 }
 
-### 2. Login User 
+### 2. Admin - Login
 POST http://localhost:9091/admin/login
 Content-Type: application/json
 
 {
-  "email": " ",
+  "email": "",
   "password": " ",
   "rememberMe": false
 }
 
-### 3. Forgot Password 
+### 3. Admin - Forgot Password
 POST http://localhost:9091/admin/forgot-password
 Content-Type: application/json
 
 {
-  "email": " "
+  "email": ""
 }
 
-### 4. Profile
+### 4. Admin - Profile
 GET http://localhost:9091/admin/users/me
+Authorization: Bearer 
+
+### ============================================================
+###  USER  endpoints  (Strapi users-permissions plugin)
+### ============================================================
+
+### 5. User - Register / Signup
+POST http://localhost:9091/api/auth/local/register
+Content-Type: application/json
+
+{
+  "username": " ",
+  "email": "",
+  "password": " "
+}
+
+### 6. User - Login
+POST http://localhost:9091/api/auth/local
+Content-Type: application/json
+
+{
+  "identifier": "",
+  "password": " "
+}
+
+### 7. User - Forgot Password
+POST http://localhost:9091/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": ""
+}
+
+### 8. User - Profile
+GET http://localhost:9091/api/users/me
 Authorization: Bearer 

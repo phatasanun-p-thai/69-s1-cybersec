@@ -40,6 +40,8 @@ services:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - ./src:/opt/app/src
     depends_on:
       db:
         condition: service_healthy

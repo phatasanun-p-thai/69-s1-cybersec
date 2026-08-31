@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "teachers",
+  "info": {
+    "singularName": "teacher",
+    "pluralName": "teachers",
+    "displayName": "Teacher"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "mappings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::mapping.mapping",
+      "mappedBy": "teacher"
+    }
+  }
+}

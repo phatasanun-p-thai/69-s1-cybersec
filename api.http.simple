@@ -3,7 +3,7 @@
 ### ============================================================
 
 ### 1. Admin - Register / Signup
-GET http://localhost:9091/admin/register-admin
+POST http://localhost:9091/admin/register-admin
 Content-Type: application/json
 
 {

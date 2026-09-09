@@ -32,7 +32,7 @@ services:
     image: prawee/strapi
     container_name: 69-s1-app
     ports:
-      - "${APP_PORT}:1337"
+      - "127.0.0.1:${APP_PORT}:1337"
     environment:
       - DATABASE_CLIENT=${DATABASE_CLIENT}
       - DATABASE_HOST=${DATABASE_HOST}

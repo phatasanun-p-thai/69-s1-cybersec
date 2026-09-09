@@ -8,6 +8,10 @@ const { sendMail } = require('./smtp');
 //  1) พยายามใช้ SMTP client ของเรา (Gmail/Outlook ฯลฯ)
 //  2) ถ้าไม่มี SMTP → log ลง console (dev mode)
 // ============================================================
+function isDevMode() {
+  return process.env.EXPOSE_TOKEN_IN_RESPONSE === 'true';
+}
+
 async function sendTokenEmail(email, rawToken) {
   const subject = 'Password Reset Request';
   const text = `Your password reset token is: ${rawToken}\n\nThis token expires in 15 minutes.\n\nIf you did not request this, please ignore this email.`;
@@ -19,21 +23,26 @@ async function sendTokenEmail(email, rawToken) {
     <p>If you did not request this, please ignore this email.</p>
   `;
 
-  // 1) ลองใช้ SMTP client ของเรา
+  // 1) ลองใช้ SMTP client ของเรา (email จริง)
   try {
     await sendMail({ to: email, subject, text, html });
     console.log('[EMAIL] Reset token sent to ' + email);
-    console.log('[EMAIL] TOKEN (dev only): ' + rawToken);
+    if (isDevMode()) {
+      console.log('[EMAIL] TOKEN (dev only): ' + rawToken);
+    }
     return true;
   } catch (err) {
     console.log('[EMAIL] SMTP send failed: ' + err.message);
   }
 
-  // 2) Fallback: log ลง console สำหรับ dev
-  console.log('='.repeat(60));
-  console.log(`[DEV MODE] Password reset token for ${email}:`);
-  console.log(`Token: ${rawToken}`);
-  console.log('='.repeat(60));
+  // 2) Fallback: ถ้าไม่มี SMTP ทำงาน และอยู่ใน dev mode → log ลง console
+  //    (โหมด prod ไม่ log token นะ — ผ่าน email อย่างเดียว)
+  if (isDevMode()) {
+    console.log('='.repeat(60));
+    console.log(`[DEV MODE] Password reset token for ${email}:`);
+    console.log(`Token: ${rawToken}`);
+    console.log('='.repeat(60));
+  }
   return false;
 }
 
@@ -110,7 +119,7 @@ module.exports = (plugin) => {
     // ⚠️ DEV ONLY: คืน token ใน response ให้เทสต์ง่าย
     // เปิดได้โดยตั้ง EXPOSE_TOKEN_IN_RESPONSE=true ใน .env
     // ️ลบ/ปิดก่อน deploy จริง (จะทำให้ attacker ที่รู้ email ยึดบัญชีได้)
-    if (process.env.EXPOSE_TOKEN_IN_RESPONSE === 'true') {
+    if (isDevMode()) {
       return ctx.send({ ok: true, token: rawToken, expiresInMinutes: 15 });
     }
 

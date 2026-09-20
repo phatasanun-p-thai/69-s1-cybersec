@@ -66,9 +66,9 @@ module.exports = (plugin) => {
       where: { email: email.toLowerCase() },
     });
 
-    // ตอบ 200 เสมอ ไม่ว่า email จะมีหรือไม่ (ป้องกัน email enumeration)
+    // ถ้า email ยังไม่มีการ register ใน DB → ตอบ error ทันที
     if (!user) {
-      return ctx.send({ ok: true });
+      return ctx.badRequest('No account found with this email address');
     }
 
     // Revoke token เก่าทั้งหมดของ user นี้ที่ยังไม่ถูกใช้
@@ -186,20 +186,6 @@ module.exports = (plugin) => {
 
     return ctx.send({ ok: true, message: 'Password has been reset successfully' });
   };
-
-  // ============================================================
-  //  เพิ่ม routes ใหม่
-  // ============================================================
-  plugin.routes['content-api'].routes.push(
-    {
-      method: 'POST',
-      path: '/auth/reset-password',
-      handler: 'auth.resetPassword',
-      config: {
-        policies: [],
-      },
-    }
-  );
 
   return plugin;
 };

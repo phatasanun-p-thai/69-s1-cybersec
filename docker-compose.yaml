@@ -29,7 +29,10 @@ services:
       - ./data-postgres:/var/lib/postgresql/data
 
   app:
-    image: prawee/strapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: prawee/strapi-cybersec
     container_name: 69-s1-app
     ports:
       - "127.0.0.1:${APP_PORT}:1337"

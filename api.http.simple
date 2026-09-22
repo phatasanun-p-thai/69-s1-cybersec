@@ -46,7 +46,16 @@ Authorization: Bearer
 
 ## 2.User
 
-### 2.1 User - Register / Signup
+### 2.1 User - Login
+POST http://localhost:9091/api/auth/local
+Content-Type: application/json
+
+{
+  "identifier": " ",
+  "password": " "
+}
+
+### 2.2 User - Register / Signup
 
 POST http://localhost:9091/api/auth/local/register
 Content-Type: application/json
@@ -54,15 +63,6 @@ Content-Type: application/json
 {
   "username": " ",
   "email": "  ",
-  "password": " "
-}
-
-### 2.2 User - Login
-POST http://localhost:9091/api/auth/local
-Content-Type: application/json
-
-{
-  "identifier": " ",
   "password": " "
 }
 

@@ -102,3 +102,208 @@ Content-Type: application/json
 ### 2.4 User - Profile
 GET http://localhost:9091/api/users/me
 Authorization: Bearer {{userToken}}
+
+## 3.Content API
+
+### 3.0 Prerequisites (ต้องทำก่อน)
+# 1) รัน 2.1 User - Login ก่อน เพื่อให้ได้ {{userToken}}
+# 2) เปิด permission ใน Admin Panel:
+#      Settings > Users & Permissions > Roles > Authenticated
+#      ติ๊ก "Authenticated" แล้วเปิดทีละกลุ่ม:
+#        Student   -> find, findOne, create, update, delete
+#        Subject   -> find, findOne, create, update, delete
+#        Teacher   -> find, findOne, create, update, delete
+#        Mapping   -> find, findOne, create, update, delete
+#    (ถ้าไม่เปิด จะได้ 403 Forbidden)
+#
+# ⚠️ ข้อควรรู้
+#   - mobile ของ Student ถูก MD5 hash อัตโนมัติตอน create
+#     (src/api/student/content-types/student/lifecycles.js) ดูหัวข้อ 3.1.1
+#   - mapping เป็น content-type ที่ไม่มี field ใช้เชื่อม Subject กับ Teacher
+#     ดูวิธีใส่ relation ที่ถูกต้องที่ 3.4.1
+#   - id ในตัวอย่างคือ id ที่ได้จาก response ของ create แต่ละตัว
+
+### 3.1 Student
+# Schema: name (string, required) | mobile (string, required, unique, 10 หลัก) | cardId (string, required, unique, 13 หลัก)
+
+#### 3.1.1 Student - Create
+POST http://localhost:9091/api/students
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "data": {
+    "name": "Phatsanun Piamyanon",
+    "mobile": "0812345678",
+    "cardId": "1234567890123"
+  }
+}
+
+# ⚠️ ตอนนี้ lifecycle จะแปลง mobile เป็น MD5 ให้อัตโนมัติ (32 หลัก)
+#    ส่ง 0812345678  →  ได้กลับมา "2271d42598bea6a17b56869be8785ea1"
+#    validation (ความยาว 10 หลัก) ถูกตรวจก่อน lifecycle ทำงาน จึงไม่ error
+#    field mobile จึง "หายไป" ในความหมายของข้อมูลที่อ่านกลับมา
+
+#### 3.1.2 Student - Find (List)
+GET http://localhost:9091/api/students?pagination[page]=1&pagination[pageSize]=10&sort=name:asc
+Authorization: Bearer {{userToken}}
+
+#### 3.1.3 Student - Find One
+GET http://localhost:9091/api/students/1
+Authorization: Bearer {{userToken}}
+
+#### 3.1.4 Student - Update
+PUT http://localhost:9091/api/students/1
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "data": {
+    "name": "Phatsanun Piamyanon",
+    "mobile": "0898765432",
+    "cardId": "1234567890123"
+  }
+}
+
+# ⚠️ mobile จะถูก hash ใหม่ทุกครั้งที่ update
+# ⚠️ mobile/cardId เป็น unique — ถ้าใช้ค่าเดิมซ้ำจะได้ 400 Validation Error
+
+#### 3.1.5 Student - Delete
+DELETE http://localhost:9091/api/students/1
+Authorization: Bearer {{userToken}}
+
+### 3.2 Subject
+# Schema: name (string, required, unique)
+
+#### 3.2.1 Subject - Create
+POST http://localhost:9091/api/subjects
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "data": {
+    "name": "Computer Science"
+  }
+}
+
+#### 3.2.2 Subject - Find (List)
+GET http://localhost:9091/api/subjects?pagination[page]=1&pagination[pageSize]=10&sort=name:asc
+Authorization: Bearer {{userToken}}
+
+#### 3.2.3 Subject - Find One
+GET http://localhost:9091/api/subjects/1
+Authorization: Bearer {{userToken}}
+
+#### 3.2.4 Subject - Update
+PUT http://localhost:9091/api/subjects/1
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "data": {
+    "name": "CS Fundamental"
+  }
+}
+
+# ⚠️ name เป็น unique — ถ้าใช้ชื่อเดิมซ้ำจะได้ 400 Validation Error
+
+#### 3.2.5 Subject - Delete
+DELETE http://localhost:9091/api/subjects/1
+Authorization: Bearer {{userToken}}
+
+### 3.3 Teacher
+# Schema: name (string, required) | mappings (relation ไปยัง Mapping, oneToMany)
+
+#### 3.3.1 Teacher - Create
+POST http://localhost:9091/api/teachers
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "data": {
+    "name": "Dr. Somchai Jaidee"
+  }
+}
+
+#### 3.3.2 Teacher - Find (List)
+GET http://localhost:9091/api/teachers?pagination[page]=1&pagination[pageSize]=10&sort=name:asc
+Authorization: Bearer {{userToken}}
+
+#### 3.3.3 Teacher - Find One (+ populate mappings)
+GET http://localhost:9091/api/teachers/1?populate[0]=mappings
+Authorization: Bearer {{userToken}}
+
+# populate[0]=mappings → จะได้ mappings ทั้งหมดของอาจารย์คนนี้
+# ถ้าไม่ populate จะได้แค่ { "id": ..., "name": ... } ไม่มี field mappings
+
+#### 3.3.4 Teacher - Update
+PUT http://localhost:9091/api/teachers/1
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "data": {
+    "name": "Dr. Somchai Jaidee"
+  }
+}
+
+#### 3.3.5 Teacher - Delete
+DELETE http://localhost:9091/api/teachers/1
+Authorization: Bearer {{userToken}}
+
+# ⚠️ ถ้าอาจารย์ยังมี mappings ผูกอยู่ ควรลบ mapping ก่อน (ดู 3.4.5)
+
+### 3.4 Mapping
+# Schema: subjects (relation ไปยัง Subject, oneToMany) | teacher (relation ไปยัง Teacher, manyToOne)
+# ใช้เป็นตารางเชื่อม Subject <-> Teacher
+
+#### 3.4.1 Mapping - Create
+POST http://localhost:9091/api/mappings
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "data": {
+    "subjects": {
+      "set": [1, 2]
+    },
+    "teacher": 1
+  }
+}
+
+# ⚠️ รูปแบบ relation ที่ถูกต้องของ mapping
+#    subjects (oneToMany ฝั่งเดียว ไม่มี mappedBy) → ต้องใช้  { "set": [id1, id2] }
+#    teacher  (manyToOne มี inversedBy)           → ใส่ id ตรง ๆ ได้เลย
+#    ถ้าใช้ { "connect": [...] } จะได้ 400 "Invalid relations"
+#    id ในตัวอย่าง = id ของ subject จาก 3.2.x และ id ของ teacher จาก 3.3.x
+
+#### 3.4.2 Mapping - Find (List)
+GET http://localhost:9091/api/mappings?pagination[page]=1&pagination[pageSize]=10
+Authorization: Bearer {{userToken}}
+
+#### 3.4.3 Mapping - Find One (+ populate subjects และ teacher)
+GET http://localhost:9091/api/mappings/1?populate[0]=subjects&populate[1]=teacher
+Authorization: Bearer {{userToken}}
+
+# ไม่ populate จะได้แค่ { "id": ..., "createdAt": ..., "updatedAt": ... } เพราะ mapping ไม่มี field ข้อมูลตรง ๆ
+
+#### 3.4.4 Mapping - Update (เปลี่ยนวิชาที่อาจารย์สอน)
+PUT http://localhost:9091/api/mappings/1
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "data": {
+    "subjects": {
+      "set": [2]
+    },
+    "teacher": 1
+  }
+}
+
+# "set" = ลบความสัมพันธ์เดิมทิ้งทั้งหมด แล้วผูกใหม่ตามที่ส่งมา
+# ถ้าต้องการ "เพิ่ม" โดยไม่ลบของเดิม ให้ใช้ { "connect": [...] } / { "disconnect": [...] } แทน
+
+#### 3.4.5 Mapping - Delete
+DELETE http://localhost:9091/api/mappings/1
+Authorization: Bearer {{userToken}}

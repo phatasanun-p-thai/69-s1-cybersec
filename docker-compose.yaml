@@ -49,9 +49,7 @@ services:
       - SMTP_PASS=${SMTP_PASS}
       - SMTP_FROM=${SMTP_FROM}
       - EXPOSE_TOKEN_IN_RESPONSE=${EXPOSE_TOKEN_IN_RESPONSE}
-    # ห้าม bind mount ./src ทับ /opt/app/src — จะทับ content-type
-    # student/subject/teacher/mapping ที่มากับ image prawee/strapi
-    # (ต้อง rebuild image หลังแก้ src: docker compose up -d --build app)
+
     depends_on:
       db:
         condition: service_healthy
